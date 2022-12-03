@@ -1,5 +1,5 @@
 package jm.task.core.jdbc.dao;
-
+//Интерфейс для класса, который работает с бд
 import jm.task.core.jdbc.model.User;
 
 import java.util.List;
