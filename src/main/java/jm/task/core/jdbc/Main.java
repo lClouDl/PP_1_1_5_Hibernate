@@ -27,6 +27,8 @@ public class Main {
         userTable.dropUsersTable();
 //        Метод удаления User'а по id (в задачи не используется)
 //        userTable.removeUserById(1);
+//        Закрываем соединение
+        userTable.close();
         }
     }
 
