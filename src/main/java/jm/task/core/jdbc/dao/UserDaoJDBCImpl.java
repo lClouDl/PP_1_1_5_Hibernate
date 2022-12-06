@@ -37,37 +37,47 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(name, lastName, age) VALUES(?, ?, ?);")){
             connection.setAutoCommit(false);
-            try {
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, lastName);
                 preparedStatement.setInt(3, age);
                 preparedStatement.execute();
                 System.out.printf("User с именем – %s добавлен в базу данных \n", name);
                 connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                System.err.println("Во время записи полей User'а в таблицу, произошла ошибка");
-                throw e;
-            }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                System.err.println("Во время сохранинеия User'а в таблицу, не удалось настроить соединение с базой данных.");
+            }
             System.err.println("Во время сохранинеия User'а в таблицу, не удалось настроить соединение с базой данных.");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println("Во время сохранинеия User'а в таблицу, не удалось настроить соединение с базой данных.");
+            }
         }
     }
 
     public void removeUserById(long id) {
         try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id = ?;")){
             connection.setAutoCommit(false);
-            try {
                 preparedStatement.setLong(1, id);
                 preparedStatement.execute();
                 connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                System.err.println("В процессе удаления User'а из таблицы, произошла ошибка");
-                throw e;
-            }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                System.err.println("Во время удаления User'а по id, не удалось настроить соединение с базой данных.");
+            }
             System.err.println("Во время удаления User'а по id, не удалось настроить соединение с базой данных.");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println("Во время удаления User'а по id, не удалось настроить соединение с базой данных.");
+            }
         }
     }
 
@@ -75,20 +85,25 @@ public class UserDaoJDBCImpl implements UserDao {
         List<User> userList = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users")){
             connection.setAutoCommit(false);
-            try {
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    userList.add(new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getByte("age")));
-                    userList.get(userList.size() - 1).setId(resultSet.getLong("id"));
-                }
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                System.err.println("В процессе изъятия всех User'ов из таблицы, произошла ошибка");
-                throw e;
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                userList.add(new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getByte("age")));
+                userList.get(userList.size() - 1).setId(resultSet.getLong("id"));
             }
-        } catch (SQLException e) {
+            connection.commit();
+            } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                System.err.println("Во время изъятия всех User'ов из таблицы в список, не удалось настроить соединение с базой данных.");
+            }
             System.err.println("Во время изъятия всех User'ов из таблицы в список, не удалось настроить соединение с базой данных.");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println("Во время изъятия всех User'ов из таблицы в список, не удалось настроить соединение с базой данных.");
+            }
         }
         return userList;
     }
