@@ -26,7 +26,7 @@ public class Util {
         }
         return null;
     }
-    public SessionFactory getSessionFactory() {
+    public static SessionFactory getSessionFactory() {
         SessionFactory sessionFactory = null;
         try {
             sessionFactory = new Configuration().addAnnotatedClass(User.class)

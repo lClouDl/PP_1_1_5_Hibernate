@@ -1,5 +1,5 @@
 package jm.task.core.jdbc.service;
-//Класс - контроллер, должен иметь поле с объектом класса UserDaoJDBCImpl
+//Класс - слой для сервиса, должен иметь поле с объектом класса UserDaoJDBCImpl (либо UserDaoHibernateImpl)
 import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
